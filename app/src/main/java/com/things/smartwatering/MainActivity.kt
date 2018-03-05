@@ -50,7 +50,7 @@ class MainActivity : Activity() {
 
     private inner class TemperaturePressureEventListener : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
-            Log.i(TAG, "sensor changed: " + event.values[0])
+            Log.i(TAG, "Temperature: " + event.values[0])
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
