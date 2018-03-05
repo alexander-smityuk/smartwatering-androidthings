@@ -36,6 +36,7 @@ class TemperaturePressureService : Service() {
         try {
             mTemperatureSensorDriver = Bme280SensorDriver(I2C_BUS)
             mTemperatureSensorDriver.registerTemperatureSensor()
+            mTemperatureSensorDriver.registerPressureSensor()
         } catch (e: IOException) {
             Log.e(TAG, "Error configuring sensor", e)
         }
@@ -43,6 +44,7 @@ class TemperaturePressureService : Service() {
 
     private fun destroyTemperaturePressureSensor() {
         mTemperatureSensorDriver.unregisterTemperatureSensor()
+        mTemperatureSensorDriver.unregisterPressureSensor()
         try {
             mTemperatureSensorDriver.close()
         } catch (e: IOException) {

@@ -21,6 +21,14 @@ class MainActivity : Activity() {
                 Log.i(TAG, "Temperature sensor connected")
                 mSensorEventListener = TemperaturePressureEventListener()
                 mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+            } else if (sensor.type == Sensor.TYPE_PRESSURE) {
+                Log.i(TAG, "Pressure sensor connected")
+                mSensorEventListener = TemperaturePressureEventListener()
+                mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
+            } else if (sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY) {
+                Log.i(TAG, "Humidity sensor connected")
+                mSensorEventListener = TemperaturePressureEventListener()
+                mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
             }
         }
     }
@@ -50,7 +58,13 @@ class MainActivity : Activity() {
 
     private inner class TemperaturePressureEventListener : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
-            Log.i(TAG, "Temperature: " + event.values[0])
+            if (event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                Log.i(TAG, "Temperature : ${"%.2f".format(event.values[0])}")
+            } else if (event.sensor.type == Sensor.TYPE_PRESSURE) {
+                Log.i(TAG, "Pressure : ${"%.2f".format(event.values[0])}")
+            } else if (event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY) {
+                Log.i(TAG, "Humidity : ${"%.2f".format(event.values[0])}")
+            }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
