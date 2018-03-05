@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.content.Intent
+import com.things.smartwatering.service.TemperaturePressureService
 
 private val TAG = MainActivity::class.java.simpleName
 

@@ -7,7 +7,7 @@
     <application>
         <uses-library android:name="com.google.android.things" />
 
-        <service android:name=".TemperaturePressureService"></service>
+        <service android:name=".service.TemperaturePressureService"></service>
 
         <activity android:name=".MainActivity">
             <intent-filter>
