@@ -5,21 +5,15 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 
-import com.google.android.things.contrib.driver.bmx280.Bmx280SensorDriver
+import com.things.smartwatering.driver.Bme280SensorDriver
 
 import java.io.IOException
 
 private val TAG = TemperaturePressureService::class.java.simpleName
-private val I2C_BUS = "BUS NAME"
+private val I2C_BUS = "I2C1"
 
-/**
- * To use this service, start it from your component (like an activity):
- * <pre>{@code
- * this.startService(Intent(this, TemperaturePressureService::class.java))
- * }</pre>
- */
 class TemperaturePressureService : Service() {
-    private lateinit var mTemperatureSensorDriver: Bmx280SensorDriver
+    private lateinit var mTemperatureSensorDriver: Bme280SensorDriver
 
     override fun onCreate() {
         setupTemperaturePressureSensor()
@@ -40,12 +34,11 @@ class TemperaturePressureService : Service() {
 
     private fun setupTemperaturePressureSensor() {
         try {
-            mTemperatureSensorDriver = Bmx280SensorDriver(I2C_BUS)
+            mTemperatureSensorDriver = Bme280SensorDriver(I2C_BUS)
             mTemperatureSensorDriver.registerTemperatureSensor()
         } catch (e: IOException) {
             Log.e(TAG, "Error configuring sensor", e)
         }
-
     }
 
     private fun destroyTemperaturePressureSensor() {
