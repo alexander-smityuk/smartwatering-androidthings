@@ -10,25 +10,31 @@ import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.content.Intent
 import com.things.smartwatering.service.TemperaturePressureService
+import com.things.smartwatering.utils.AppConstant
 
-private val TAG = MainActivity::class.java.simpleName
 
 class MainActivity : Activity() {
+
     private lateinit var mSensorManager: SensorManager
+
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
-            if (sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE) {
-                Log.i(TAG, "Temperature sensor connected")
-                mSensorEventListener = TemperaturePressureEventListener()
-                mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
-            } else if (sensor.type == Sensor.TYPE_PRESSURE) {
-                Log.i(TAG, "Pressure sensor connected")
-                mSensorEventListener = TemperaturePressureEventListener()
-                mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
-            } else if (sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY) {
-                Log.i(TAG, "Humidity sensor connected")
-                mSensorEventListener = TemperaturePressureEventListener()
-                mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
+            when {
+                sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE -> {
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature sensor connected")
+                    mSensorEventListener = TemperaturePressureEventListener()
+                    mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+                }
+                sensor.type == Sensor.TYPE_PRESSURE -> {
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Pressure sensor connected")
+                    mSensorEventListener = TemperaturePressureEventListener()
+                    mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
+                }
+                sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> {
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity sensor connected")
+                    mSensorEventListener = TemperaturePressureEventListener()
+                    mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
+                }
             }
         }
     }
@@ -58,17 +64,15 @@ class MainActivity : Activity() {
 
     private inner class TemperaturePressureEventListener : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
-            if (event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE) {
-                Log.i(TAG, "Temperature : ${"%.2f".format(event.values[0])}")
-            } else if (event.sensor.type == Sensor.TYPE_PRESSURE) {
-                Log.i(TAG, "Pressure : ${"%.2f".format(event.values[0])}")
-            } else if (event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY) {
-                Log.i(TAG, "Humidity : ${"%.2f".format(event.values[0])}")
+            when {
+                event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature : ${"%.2f".format(event.values[0])}")
+                event.sensor.type == Sensor.TYPE_PRESSURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Pressure : ${"%.2f".format(event.values[0])}")
+                event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity : ${"%.2f".format(event.values[0])}")
             }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-            Log.i(TAG, "sensor accuracy changed: " + accuracy)
+            Log.i(AppConstant.MAIN_ACTIVITY_TAG, "sensor accuracy changed: " + accuracy)
         }
     }
 

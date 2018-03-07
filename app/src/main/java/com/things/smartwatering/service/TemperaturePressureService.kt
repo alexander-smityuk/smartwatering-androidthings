@@ -6,13 +6,12 @@ import android.os.IBinder
 import android.util.Log
 
 import com.things.smartwatering.driver.Bme280SensorDriver
+import com.things.smartwatering.utils.AppConstant
 
 import java.io.IOException
 
-private val TAG = TemperaturePressureService::class.java.simpleName
-private val I2C_BUS = "I2C1"
-
 class TemperaturePressureService : Service() {
+
     private lateinit var mTemperatureSensorDriver: Bme280SensorDriver
 
     override fun onCreate() {
@@ -34,12 +33,12 @@ class TemperaturePressureService : Service() {
 
     private fun setupTemperaturePressureSensor() {
         try {
-            mTemperatureSensorDriver = Bme280SensorDriver(I2C_BUS)
+            mTemperatureSensorDriver = Bme280SensorDriver(AppConstant.I2C_BUS)
             mTemperatureSensorDriver.registerTemperatureSensor()
             mTemperatureSensorDriver.registerPressureSensor()
             mTemperatureSensorDriver.registerHumiditySensor()
         } catch (e: IOException) {
-            Log.e(TAG, "Error configuring sensor", e)
+            Log.e(AppConstant.TEMP_SERVICE_TAG, "Error configuring sensor", e)
         }
     }
 
@@ -50,7 +49,7 @@ class TemperaturePressureService : Service() {
         try {
             mTemperatureSensorDriver.close()
         } catch (e: IOException) {
-            Log.e(TAG, "Error closing sensor", e)
+            Log.e(AppConstant.TEMP_SERVICE_TAG, "Error closing sensor", e)
         }
     }
 }
