@@ -24,7 +24,7 @@ adb shell am start com.things.smartwatering/.MainActivity
 
 ## Schematics
 
-
+![Schematics](SmartWatering_bb.jpg)
 
 ## License
 
