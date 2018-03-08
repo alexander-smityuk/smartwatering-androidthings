@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.content.Intent
+import com.things.smartwatering.driver.SoilMoistureSensor
 import com.things.smartwatering.service.TemperaturePressureService
 import com.things.smartwatering.utils.AppConstant
 
@@ -43,6 +44,10 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startTemperaturePressureRequest()
+
+        //val sensor = SoilMoistureSensor(AppConstant.I2C_BUS)
+        //val data = sensor.readData()
+        //Log.i(AppConstant.MAIN_ACTIVITY_TAG, "TEST: $data")
     }
 
     override fun onDestroy() {

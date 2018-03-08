@@ -192,14 +192,14 @@ public class Bme280 implements AutoCloseable {
     private void readPressureCalibrationData() throws IOException {
         // Read pressure calibration data (9 words). First value is unsigned.
         mPressureCalibrationData[0] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_1) & 0xffff;
-        mPressureCalibrationData[1] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_2);
-        mPressureCalibrationData[2] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_3);
-        mPressureCalibrationData[3] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_4);
-        mPressureCalibrationData[4] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_5);
-        mPressureCalibrationData[5] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_6);
-        mPressureCalibrationData[6] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_7);
-        mPressureCalibrationData[7] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_8);
-        mPressureCalibrationData[8] = (short) mDevice.readRegWord(BMP280_REG_PRESS_CALIB_9);
+        mPressureCalibrationData[1] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_2);
+        mPressureCalibrationData[2] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_3);
+        mPressureCalibrationData[3] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_4);
+        mPressureCalibrationData[4] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_5);
+        mPressureCalibrationData[5] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_6);
+        mPressureCalibrationData[6] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_7);
+        mPressureCalibrationData[7] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_8);
+        mPressureCalibrationData[8] = mDevice.readRegWord(BMP280_REG_PRESS_CALIB_9);
     }
 
     private void readHumidityCalibrationData() throws IOException {
