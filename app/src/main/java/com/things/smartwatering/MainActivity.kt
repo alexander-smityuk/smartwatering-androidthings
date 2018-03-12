@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.content.Intent
+import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.service.TemperaturePressureService
 import com.things.smartwatering.utils.AppConstant
 
@@ -16,7 +17,7 @@ class MainActivity : Activity() {
 
     private lateinit var mSensorManager: SensorManager
 
-    //var sensor : SoilMoistureSensor = SoilMoistureSensor(AppConstant.I2C_BUS)
+    private val mFireBaseRepository: FirebaseRepository = FirebaseRepository()
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -66,7 +67,11 @@ class MainActivity : Activity() {
     private inner class TemperaturePressureEventListener : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
             when {
-                event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature : ${"%.2f".format(event.values[0])}")
+                event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE -> {
+                    mFireBaseRepository.setTime(System.currentTimeMillis())
+                    mFireBaseRepository.setTemperature(event.values[0])
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature : ${"%.2f".format(event.values[0])}")
+                }
                 event.sensor.type == Sensor.TYPE_PRESSURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Pressure : ${"%.2f".format(event.values[0])}")
                 event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity : ${"%.2f".format(event.values[0])}")
             }
