@@ -8,6 +8,7 @@ import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
 import com.google.android.things.userdriver.UserSensorDriver;
 import com.google.android.things.userdriver.UserSensorReading;
+import com.things.smartwatering.driver.bme280.Bme280;
 
 import java.io.IOException;
 import java.util.UUID;

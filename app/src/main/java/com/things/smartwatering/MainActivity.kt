@@ -9,6 +9,8 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.content.Intent
+import com.things.smartwatering.driver.ads1115.Ads1115
+import com.things.smartwatering.driver.ads1115.Ads1115Device
 import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.service.TemperaturePressureService
 import com.things.smartwatering.utils.AppConstant
@@ -44,7 +46,10 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startTemperaturePressureRequest()
+        //startTemperaturePressureRequest()
+
+        val device = Ads1115.Factory().newAds1115(AppConstant.I2C_BUS, 0x48, Ads1115.Gain.TWO_THIRDS)
+        println(device.readVoltage(Ads1115.Channel.ZERO))
     }
 
     override fun onDestroy() {
