@@ -6,21 +6,23 @@ import android.os.IBinder
 import android.util.Log
 
 import com.things.smartwatering.driver.Bme280SensorDriver
+import com.things.smartwatering.driver.SoilMoistureSensorDriver
 import com.things.smartwatering.utils.AppConstant
 
 import java.io.IOException
 
-class TemperaturePressureService : Service() {
+class SensorService : Service() {
 
     private lateinit var mTemperatureSensorDriver: Bme280SensorDriver
+    private lateinit var mSoilMoistureSensorDriver: SoilMoistureSensorDriver
 
     override fun onCreate() {
-        setupTemperaturePressureSensor()
+        setupSensors()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        destroyTemperaturePressureSensor()
+        destroySensors()
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -31,23 +33,30 @@ class TemperaturePressureService : Service() {
         return Service.START_NOT_STICKY
     }
 
-    private fun setupTemperaturePressureSensor() {
+    private fun setupSensors() {
         try {
             mTemperatureSensorDriver = Bme280SensorDriver(AppConstant.I2C_BUS)
+            mSoilMoistureSensorDriver = SoilMoistureSensorDriver(AppConstant.I2C_BUS)
+
             mTemperatureSensorDriver.registerTemperatureSensor()
             mTemperatureSensorDriver.registerPressureSensor()
             mTemperatureSensorDriver.registerHumiditySensor()
+            mSoilMoistureSensorDriver.registerSoilMoistureSensor()
+
         } catch (e: IOException) {
             Log.e(AppConstant.TEMP_SERVICE_TAG, "Error configuring sensor", e)
         }
     }
 
-    private fun destroyTemperaturePressureSensor() {
+    private fun destroySensors() {
         mTemperatureSensorDriver.unregisterTemperatureSensor()
         mTemperatureSensorDriver.unregisterPressureSensor()
-        mTemperatureSensorDriver.registerHumiditySensor()
+        mTemperatureSensorDriver.unregisterHumiditySensor()
+        mSoilMoistureSensorDriver.unregisterSoilMoistureSensor()
+
         try {
             mTemperatureSensorDriver.close()
+            mSoilMoistureSensorDriver.close()
         } catch (e: IOException) {
             Log.e(AppConstant.TEMP_SERVICE_TAG, "Error closing sensor", e)
         }
