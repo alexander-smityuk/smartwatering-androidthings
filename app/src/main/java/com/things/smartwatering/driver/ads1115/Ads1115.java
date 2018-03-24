@@ -68,7 +68,7 @@ public interface Ads1115 {
 
     int read(Channel channel);
 
-    double readVoltage(Channel channel);
+    float readVoltage(Channel channel);
 
     void close();
 
