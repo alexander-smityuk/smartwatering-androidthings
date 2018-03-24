@@ -1,4 +1,4 @@
-package com.things.smartwatering.driver;
+package com.things.smartwatering.driver.bme280;
 
 
 import android.support.annotation.IntDef;
