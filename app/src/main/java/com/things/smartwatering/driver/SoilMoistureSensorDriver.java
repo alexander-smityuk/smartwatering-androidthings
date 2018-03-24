@@ -8,6 +8,7 @@ import com.google.android.things.userdriver.UserSensor;
 import com.google.android.things.userdriver.UserSensorDriver;
 import com.google.android.things.userdriver.UserSensorReading;
 import com.things.smartwatering.driver.ads1115.Ads1115;
+import com.things.smartwatering.utils.AppConstant;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -15,13 +16,18 @@ import java.util.UUID;
 public class SoilMoistureSensorDriver implements AutoCloseable {
 
     private static final String DRIVER_NAME = "Soil Moisture";
+    private static final String SENSOR_STRING_TYPE = "com.smartwatering.soilmoisture";
+
+    private static final float SOIL_MAGIC_CONST = 4.2f;
+
+    private static final int I2C_ADDRESS = 0x48;
 
     private Ads1115 mDevice;
 
     private SoilMoistureUserDriver mSoilMoistureUserDriver;
 
     public SoilMoistureSensorDriver(String bus) {
-        mDevice = new Ads1115.Factory().newAds1115(bus, 0x48, Ads1115.Gain.TWO_THIRDS);
+        mDevice = new Ads1115.Factory().newAds1115(bus, I2C_ADDRESS, Ads1115.Gain.TWO_THIRDS);
     }
 
     @Override
@@ -56,25 +62,19 @@ public class SoilMoistureSensorDriver implements AutoCloseable {
 
     private class SoilMoistureUserDriver extends UserSensorDriver {
 
-        private static final float DRIVER_MAX_RANGE = 100f;
-        private static final float DRIVER_RESOLUTION = 0.00008f;
-        private static final float DRIVER_POWER = 280f / 1000.f;
         private static final int DRIVER_VERSION = 1;
-        private static final String DRIVER_REQUIRED_PERMISSION = "";
-
         private boolean mEnabled;
         private UserSensor mUserSensor;
 
         private UserSensor getUserSensor() {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
-                        .setType(Sensor.TYPE_RELATIVE_HUMIDITY)
+                        .setCustomType(
+                                AppConstant.TYPE_SOIL_MOISTURE,
+                                SENSOR_STRING_TYPE,
+                                Sensor.REPORTING_MODE_ON_CHANGE)
                         .setName(DRIVER_NAME)
                         .setVersion(DRIVER_VERSION)
-                        .setMaxRange(DRIVER_MAX_RANGE)
-                        .setResolution(DRIVER_RESOLUTION)
-                        .setPower(DRIVER_POWER)
-                        .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setUuid(UUID.randomUUID())
                         .setDriver(this)
                         .build();
@@ -82,9 +82,15 @@ public class SoilMoistureSensorDriver implements AutoCloseable {
             return mUserSensor;
         }
 
+        /**
+         * max voltage = 4.2V -> 0% moisture
+         *
+         * @return soil moisture in percents
+         * @throws IOException
+         */
         @Override
         public UserSensorReading read() throws IOException {
-            return new UserSensorReading(new float[]{(mDevice.readVoltage(Ads1115.Channel.ONE) / 4.2f) * 100f});
+            return new UserSensorReading(new float[]{100 - ((float) mDevice.readVoltage(Ads1115.Channel.ZERO) / SOIL_MAGIC_CONST * 100)});
         }
 
         @Override

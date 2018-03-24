@@ -21,8 +21,8 @@ public class Ads1115Device implements AutoCloseable, Ads1115 {
     }
 
     @Override
-    public float readVoltage(Channel channel) {
-        return (float) ((channelReader.read(channel) * 0.1875)/1000);
+    public double readVoltage(Channel channel) {
+        return (channelReader.read(channel) * 0.1875)/1000;
     }
 
     @Override
