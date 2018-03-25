@@ -9,15 +9,23 @@ import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.os.Bundle
 import android.util.Log
+import com.things.smartwatering.driver.pump.Pump
+import com.things.smartwatering.driver.pump.WaterPump
 import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.service.SensorService
 import com.things.smartwatering.utils.AppConstant
+import com.things.smartwatering.utils.AppConstant.PUMP_GPIO_PIN
+import com.google.android.things.pio.PeripheralManagerService
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : Activity() {
 
     private lateinit var mSensorManager: SensorManager
 
     private val mFireBaseRepository: FirebaseRepository = FirebaseRepository()
+
+    private lateinit var waterPump: Pump
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -37,7 +45,7 @@ class MainActivity : Activity() {
                     mSensorEventListener = SensorsEventListener()
                     mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
                 }
-                sensor.type == AppConstant.TYPE_SOIL_MOISTURE ->{
+                sensor.type == AppConstant.TYPE_SOIL_MOISTURE -> {
                     Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Soil moisture sensor connected")
                     mSensorEventListener = SensorsEventListener()
                     mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
@@ -51,11 +59,13 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startSensorRequest()
+        waterPump = WaterPump(PUMP_GPIO_PIN)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         stopSensorRequest()
+        waterPump.close()
     }
 
     private fun startSensorRequest() {

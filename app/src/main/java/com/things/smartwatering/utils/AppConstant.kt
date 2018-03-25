@@ -11,5 +11,7 @@ object AppConstant {
 
     const val I2C_BUS = "I2C1"
 
+    const val PUMP_GPIO_PIN = "BCM4"
+
     const val TYPE_SOIL_MOISTURE = 0x10000
 }
