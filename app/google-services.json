@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "889619420930",
+    "firebase_url": "https://smartwatering-8ab46.firebaseio.com",
+    "project_id": "smartwatering-8ab46",
+    "storage_bucket": "smartwatering-8ab46.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889619420930:android:8efe4815456d18dc",
+        "android_client_info": {
+          "package_name": "com.things.smartwatering"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889619420930-mjmshirji1o473q6f512vsvgemeetbb6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.things.smartwatering",
+            "certificate_hash": "89d6807ace26cd71de83a2592fef08f391fdfd66"
+          }
+        },
+        {
+          "client_id": "889619420930-463ivtcu8o9164o68s246ln35qmgplli.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb-sXnEsgo3cibAwxYNgfRvJGOOw_JXNU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889619420930-463ivtcu8o9164o68s246ln35qmgplli.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

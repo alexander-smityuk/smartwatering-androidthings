@@ -11,21 +11,22 @@ import android.os.Bundle
 import android.util.Log
 import com.things.smartwatering.driver.pump.Pump
 import com.things.smartwatering.driver.pump.WaterPump
+import com.things.smartwatering.model.DataInfo
 import com.things.smartwatering.repository.FirebaseRepository
+import com.things.smartwatering.repository.FirebaseRepositoryImpl
 import com.things.smartwatering.service.SensorService
 import com.things.smartwatering.utils.AppConstant
 import com.things.smartwatering.utils.AppConstant.PUMP_GPIO_PIN
-import com.google.android.things.pio.PeripheralManagerService
-import java.util.concurrent.TimeUnit
-
 
 class MainActivity : Activity() {
 
     private lateinit var mSensorManager: SensorManager
 
-    private val mFireBaseRepository: FirebaseRepository = FirebaseRepository()
+    private val mFireBaseRepository: FirebaseRepository = FirebaseRepositoryImpl()
 
     private lateinit var waterPump: Pump
+
+    private var dataInfo : DataInfo = DataInfo()
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -34,11 +35,6 @@ class MainActivity : Activity() {
                     Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature sensor connected")
                     mSensorEventListener = SensorsEventListener()
                     mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
-                }
-                sensor.type == Sensor.TYPE_PRESSURE -> {
-                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Pressure sensor connected")
-                    mSensorEventListener = SensorsEventListener()
-                    mSensorManager.registerListener(mSensorEventListener, sensor, SensorManager.SENSOR_DELAY_UI)
                 }
                 sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> {
                     Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity sensor connected")
@@ -84,19 +80,24 @@ class MainActivity : Activity() {
         override fun onSensorChanged(event: SensorEvent) {
             when {
                 event.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE -> {
-                    mFireBaseRepository.setTime(System.currentTimeMillis())
-                    mFireBaseRepository.setTemperature(event.values[0])
                     Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Temperature : ${"%.2f".format(event.values[0])}")
+                    dataInfo.temperature = event.values[0]
                 }
-                event.sensor.type == Sensor.TYPE_PRESSURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Pressure : ${"%.2f".format(event.values[0])}")
-                event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity : ${"%.2f".format(event.values[0])}")
-                event.sensor.type == AppConstant.TYPE_SOIL_MOISTURE -> Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Soil Moisture : ${"%.2f".format(event.values[0])}")
+                event.sensor.type == Sensor.TYPE_RELATIVE_HUMIDITY -> {
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Humidity : ${"%.2f".format(event.values[0])}")
+                    dataInfo.humidity = event.values[0]
+                }
+                event.sensor.type == AppConstant.TYPE_SOIL_MOISTURE -> {
+                    Log.i(AppConstant.MAIN_ACTIVITY_TAG, "Soil Moisture : ${"%.2f".format(event.values[0])}")
+                    dataInfo.soilMoisture = event.values[0]
+                }
             }
+
+            mFireBaseRepository.putDataInfo(dataInfo)
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
             Log.i(AppConstant.MAIN_ACTIVITY_TAG, "sensor accuracy changed: " + accuracy)
         }
     }
-
 }
