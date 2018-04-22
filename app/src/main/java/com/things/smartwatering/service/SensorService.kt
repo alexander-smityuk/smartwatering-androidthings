@@ -39,7 +39,6 @@ class SensorService : Service() {
             mSoilMoistureSensorDriver = SoilMoistureSensorDriver(AppConstant.I2C_BUS)
 
             mTemperatureSensorDriver.registerTemperatureSensor()
-            mTemperatureSensorDriver.registerPressureSensor()
             mTemperatureSensorDriver.registerHumiditySensor()
             mSoilMoistureSensorDriver.registerSoilMoistureSensor()
 
@@ -50,7 +49,6 @@ class SensorService : Service() {
 
     private fun destroySensors() {
         mTemperatureSensorDriver.unregisterTemperatureSensor()
-        mTemperatureSensorDriver.unregisterPressureSensor()
         mTemperatureSensorDriver.unregisterHumiditySensor()
         mSoilMoistureSensorDriver.unregisterSoilMoistureSensor()
 
