@@ -8,25 +8,24 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import com.google.android.gms.nearby.Nearby
+import com.google.android.gms.nearby.connection.*
 import com.things.smartwatering.driver.pump.Pump
-import com.things.smartwatering.driver.pump.WaterPump
 import com.things.smartwatering.model.DataInfo
 import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.repository.FirebaseRepositoryImpl
 import com.things.smartwatering.service.SensorService
 import com.things.smartwatering.utils.AppConstant
-import com.things.smartwatering.utils.AppConstant.PUMP_GPIO_PIN
 
 class MainActivity : Activity() {
 
     private lateinit var mSensorManager: SensorManager
-
-    private val mFireBaseRepository: FirebaseRepository = FirebaseRepositoryImpl()
-
+    private lateinit var mFireBaseRepository: FirebaseRepository
     private lateinit var waterPump: Pump
-
-    private var dataInfo : DataInfo = DataInfo()
+    private var dataInfo: DataInfo = DataInfo()
+    private lateinit var mSensorEventListener: SensorsEventListener
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -50,12 +49,17 @@ class MainActivity : Activity() {
         }
     }
 
-    private lateinit var mSensorEventListener: SensorsEventListener
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mFireBaseRepository = FirebaseRepositoryImpl()
+
         startSensorRequest()
-        waterPump = WaterPump(PUMP_GPIO_PIN)
+        //waterPump = WaterPump(PUMP_GPIO_PIN)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Nearby.getConnectionsClient(this).stopAdvertising()
     }
 
     override fun onDestroy() {
@@ -93,11 +97,42 @@ class MainActivity : Activity() {
                 }
             }
 
-            mFireBaseRepository.putDataInfo(dataInfo)
+            Handler().postDelayed({mFireBaseRepository.putDataInfo(dataInfo)}, 1000)
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
             Log.i(AppConstant.MAIN_ACTIVITY_TAG, "sensor accuracy changed: " + accuracy)
+        }
+    }
+
+    private fun startAdvertising() {
+        Nearby.getConnectionsClient(this).startAdvertising(
+                "Raspberry Pi",
+                "com.things.smartwatering",
+                connectionLifecycleCallback,
+                AdvertisingOptions(Strategy.P2P_STAR))
+    }
+
+    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
+        override fun onConnectionResult(endPointId: String?, p1: ConnectionResolution?) {
+        }
+
+        override fun onDisconnected(endPointId: String?) {
+        }
+
+        override fun onConnectionInitiated(p0: String?, p1: ConnectionInfo?) {
+            Nearby.getConnectionsClient(this@MainActivity).acceptConnection(p0
+                    ?: "", object : PayloadCallback() {
+                override fun onPayloadReceived(endPointId: String?, p1: Payload?) {
+                    Log.d("PAYLOAD", String(p1!!.asBytes()!!))
+                    Nearby.getConnectionsClient(this@MainActivity)
+                            .sendPayload(p0!!, p1)
+                }
+
+                override fun onPayloadTransferUpdate(endPointId: String?, p1: PayloadTransferUpdate?) {
+
+                }
+            })
         }
     }
 }
