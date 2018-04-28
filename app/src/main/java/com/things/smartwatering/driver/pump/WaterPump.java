@@ -1,7 +1,6 @@
 package com.things.smartwatering.driver.pump;
 
 import android.os.Handler;
-import android.util.TimeUtils;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
@@ -13,7 +12,7 @@ public class WaterPump implements Pump {
 
     private Gpio mRelayGpio;
 
-    public WaterPump(String pinName) throws IOException {
+    public WaterPump(String pinName) {
         try {
             PeripheralManagerService service = new PeripheralManagerService();
             mRelayGpio = service.openGpio(pinName);
@@ -24,7 +23,7 @@ public class WaterPump implements Pump {
     }
 
     @Override
-    public void water(long duration, TimeUnit timeUnit) throws IOException {
+    public void water(long duration, TimeUnit timeUnit) {
         try {
             mRelayGpio.setValue(true);
         } catch (IOException e) {
@@ -44,7 +43,7 @@ public class WaterPump implements Pump {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (mRelayGpio != null) {
             try {
                 mRelayGpio.close();

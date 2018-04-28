@@ -8,24 +8,30 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.DynamicSensorCallback
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.things.smartwatering.driver.pump.Pump
+import com.things.smartwatering.driver.pump.WaterPump
 import com.things.smartwatering.model.DataInfo
 import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.repository.FirebaseRepositoryImpl
 import com.things.smartwatering.service.SensorService
 import com.things.smartwatering.utils.AppConstant
+import com.things.smartwatering.utils.AppConstant.PUMP_GPIO_PIN
+import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
 
     private lateinit var mSensorManager: SensorManager
-    private lateinit var mFireBaseRepository: FirebaseRepository
-    private lateinit var waterPump: Pump
-    private var dataInfo: DataInfo = DataInfo()
     private lateinit var mSensorEventListener: SensorsEventListener
+    private lateinit var waterPump: Pump
+
+    private lateinit var mFireBaseRepository: FirebaseRepository
+    private var dataInfo: DataInfo = DataInfo()
+
+    private var lastTime: Long = 0
+    private val delay: Long = 30000
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -53,8 +59,11 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         mFireBaseRepository = FirebaseRepositoryImpl()
 
+        waterPump = WaterPump(PUMP_GPIO_PIN)
+        waterPump.water(15, TimeUnit.SECONDS)
+
         startSensorRequest()
-        //waterPump = WaterPump(PUMP_GPIO_PIN)
+        startAdvertising()
     }
 
     override fun onStop() {
@@ -97,7 +106,12 @@ class MainActivity : Activity() {
                 }
             }
 
-            Handler().postDelayed({mFireBaseRepository.putDataInfo(dataInfo)}, 1000)
+            if (System.currentTimeMillis() - lastTime > delay) {
+                lastTime = System.currentTimeMillis()
+                dataInfo.time = lastTime
+
+                mFireBaseRepository.putDataInfo(dataInfo)
+            }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
