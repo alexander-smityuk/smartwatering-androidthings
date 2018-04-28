@@ -7,9 +7,9 @@ import com.things.smartwatering.model.DataInfo
 class FirebaseRepositoryImpl : FirebaseRepository {
 
     private val mDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val mDatabaseRef: DatabaseReference = mDatabase.getReference("data").push()
+    private val mDatabaseRef: DatabaseReference = mDatabase.reference
 
     override fun putDataInfo(info: DataInfo) {
-        mDatabaseRef.setValue(info)
+        mDatabaseRef.child("data").setValue(info)
     }
 }
