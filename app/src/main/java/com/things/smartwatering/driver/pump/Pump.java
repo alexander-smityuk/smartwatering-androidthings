@@ -7,5 +7,7 @@ import java.util.concurrent.TimeUnit;
 public interface Pump {
     void water(long duration, TimeUnit timeUnit) throws IOException;
 
+    void water(Boolean water) throws IOException;
+
     void close() throws IOException;
 }

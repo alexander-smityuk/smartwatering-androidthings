@@ -43,6 +43,15 @@ public class WaterPump implements Pump {
     }
 
     @Override
+    public void water(Boolean water) {
+        try {
+            mRelayGpio.setValue(water);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void close() {
         if (mRelayGpio != null) {
             try {
