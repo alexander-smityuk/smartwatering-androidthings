@@ -18,4 +18,8 @@ class FirebaseRepositoryImpl : FirebaseRepository {
     override fun getStatusData(listener: ValueEventListener) {
         mDatabaseRef.child("status").addValueEventListener(listener)
     }
+
+    override fun getEventData(listener: ChildEventListener) {
+        mDatabaseRef.child("events").addChildEventListener(listener)
+    }
 }

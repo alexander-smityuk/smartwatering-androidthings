@@ -24,7 +24,6 @@ import com.things.smartwatering.repository.FirebaseRepositoryImpl
 import com.things.smartwatering.service.SensorService
 import com.things.smartwatering.utils.AppConstant
 import com.things.smartwatering.utils.AppConstant.PUMP_GPIO_PIN
-import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
 
@@ -73,6 +72,23 @@ class MainActivity : Activity() {
 
             override fun onCancelled(error: DatabaseError?) {
                 Log.e("Firebase", error.toString())
+            }
+        })
+        mFireBaseRepository.getEventData(object : ChildEventListener{
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+
+            override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
+            }
+
+            override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
+            }
+
+            override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
+                //TODO: start alarm service
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot?) {
             }
         })
 
