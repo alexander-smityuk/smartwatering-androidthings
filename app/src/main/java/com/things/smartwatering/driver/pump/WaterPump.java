@@ -11,8 +11,19 @@ import java.util.concurrent.TimeUnit;
 public class WaterPump implements Pump {
 
     private Gpio mRelayGpio;
+    private static WaterPump instance;
 
-    public WaterPump(String pinName) {
+    private WaterPump() {
+    }
+
+    public static WaterPump getInstance() {
+        if (instance == null) {
+            instance = new WaterPump();
+        }
+        return instance;
+    }
+
+    public void setPin(String pinName) {
         try {
             PeripheralManagerService service = new PeripheralManagerService();
             mRelayGpio = service.openGpio(pinName);

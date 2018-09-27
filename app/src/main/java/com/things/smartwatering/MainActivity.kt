@@ -1,6 +1,9 @@
 package com.things.smartwatering
 
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -18,7 +21,9 @@ import com.google.firebase.database.ValueEventListener
 import com.things.smartwatering.driver.pump.Pump
 import com.things.smartwatering.driver.pump.WaterPump
 import com.things.smartwatering.model.DataInfo
+import com.things.smartwatering.model.Event
 import com.things.smartwatering.model.Status
+import com.things.smartwatering.receiver.AlarmReceiver
 import com.things.smartwatering.repository.FirebaseRepository
 import com.things.smartwatering.repository.FirebaseRepositoryImpl
 import com.things.smartwatering.service.SensorService
@@ -36,6 +41,9 @@ class MainActivity : Activity() {
 
     private var lastTime: Long = 0
     private val delay: Long = 30000
+
+    private var alarmManager: AlarmManager? = null
+    private lateinit var alarmIntent: PendingIntent
 
     private val mDynamicSensorCallback = object : DynamicSensorCallback() {
         override fun onDynamicSensorConnected(sensor: Sensor) {
@@ -61,7 +69,13 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        waterPump = WaterPump(PUMP_GPIO_PIN)
+        waterPump = WaterPump.getInstance()
+        waterPump.setPin(PUMP_GPIO_PIN)
+
+        alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(this, 0, intent, 0)
+        }
 
         mFireBaseRepository = FirebaseRepositoryImpl()
         mFireBaseRepository.getStatusData(object : ValueEventListener {
@@ -84,8 +98,9 @@ class MainActivity : Activity() {
             override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
             }
 
-            override fun onChildAdded(p0: DataSnapshot?, p1: String?) {
-                //TODO: start alarm service
+            override fun onChildAdded(dataSnapshot: DataSnapshot?, p1: String?) {
+                val event = dataSnapshot?.getValue(Event::class.java)
+                alarmManager!!.set(AlarmManager.RTC, event!!.dateTime , alarmIntent)
             }
 
             override fun onChildRemoved(p0: DataSnapshot?) {
